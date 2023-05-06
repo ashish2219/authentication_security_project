@@ -4,7 +4,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
-const md5 = require("md5");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const app = express();
 
@@ -35,35 +36,67 @@ app.get("/register", function (req, res) {
     res.render("register");
 })
 
-app.post("/register", async function (req, res) {
-    try {
-        const newUser = new User({
-            email: req.body.username,
-            password: md5(req.body.password)
-        });
-        await newUser.save();
-        res.render("secrets");
-    }
-    catch (err) {
-        console.log(err);
-    }
+app.get("/logout", function (req, res) {
+    res.render("home");
 })
 
-app.post("/login", async function (req, res) {
-    try {
-        const username = req.body.username;
-        const password = md5(req.body.password);
-
-        const foundUser = await User.findOne({ email: username })
-        if (foundUser && foundUser.password === password) {
+app.post("/register", function (req, res) {
+    bcrypt.hash(req.body.password, saltRounds, async function (err, hash) {
+        try {
+            const newUser = new User({
+                email: req.body.username,
+                password: hash
+            });
+            await newUser.save();
             res.render("secrets");
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+})
+
+
+app.post('/login', async function (req, res) {
+    try {
+        const { username, password } = req.body; // Using object destructuring
+
+        const foundUser = await User.findOne({ email: username });
+        if (foundUser) {
+            // Compare the plain text password with the hashed password using bcrypt.compare
+            const match = await bcrypt.compare(password, foundUser.password);
+            if (match) {
+                res.render('secrets');
+            }
         } else {
-            res.send("Invalid username or password");
+            res.send('Invalid username or password');
         }
     } catch (err) {
         console.log(err);
+        res.status(500).send('Internal server error'); // Return an error response
     }
-})
+});
+
+
+// app.post("/login", async function (req, res) {
+//     try {
+//         const username = req.body.username;
+//         const password = req.body.password;
+
+//         const foundUser = await User.findOne({ email: username })
+//         if (foundUser && foundUser.password === password) {
+//             bcrypt.compare(password, foundUser.password, function (err, result) {
+//                 if (result === true) {
+//                     res.render("secrets");
+//                 }
+//             });
+//         } else {
+//             res.send("Invalid username or password");
+//         }
+//     } catch (err) {
+//         console.log(err);
+//     }
+// })
 
 
 
