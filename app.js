@@ -106,63 +106,6 @@ app.post('/login', function (req, res) {
 });
 
 
-// app.post("/login", async function (req, res) {
-//     try {
-//         const username = req.body.username;
-//         const password = req.body.password;
-
-//         const foundUser = await User.findOne({ email: username })
-//         if (foundUser && foundUser.password === password) {
-//             bcrypt.compare(password, foundUser.password, function (err, result) {
-//                 if (result === true) {
-//                     res.render("secrets");
-//                 }
-//             });
-//         } else {
-//             res.send("Invalid username or password");
-//         }
-//     } catch (err) {
-//         console.log(err);
-//     }
-// })
-
-
-
-
 app.listen(3000, function () {
     console.log("Server has started on port 3000.");
 })
-
-
-// bcrypt.hash(req.body.password, saltRounds, async function (err, hash) {
-//     try {
-//         const newUser = new User({
-//             email: req.body.username,
-//             password: hash
-//         });
-//         await newUser.save();
-//         res.render("secrets");
-//     }
-//     catch (err) {
-//         console.log(err);
-//     }
-// });
-
-
-// try {
-//     const { username, password } = req.body; // Using object destructuring
-
-//     const foundUser = await User.findOne({ email: username });
-//     if (foundUser) {
-//         // Compare the plain text password with the hashed password using bcrypt.compare
-//         const match = await bcrypt.compare(password, foundUser.password);
-//         if (match) {
-//             res.render('secrets');
-//         }
-//     } else {
-//         res.send('Invalid username or password');
-//     }
-// } catch (err) {
-//     console.log(err);
-//     res.status(500).send('Internal server error'); // Return an error response
-// }
