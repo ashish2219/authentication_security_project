@@ -37,7 +37,8 @@ mongoose.connect("mongodb://localhost:27017/userDB", { useNewUrlParser: true });
 const userSchema = new mongoose.Schema({
     email: String,
     password: String,
-    googleId: String
+    googleId: String,
+    secret: String
 });
 
 
@@ -53,12 +54,24 @@ passport.use(User.createStrategy());
 
 
 passport.serializeUser(function (user, done) {
-    done(null, user);
+    done(null, user.id);
 });
 
-passport.deserializeUser(function (user, done) {
-    done(null, user);
+
+passport.deserializeUser(async function (id, done) {
+    try {
+        const user = await User.findById(id);
+        done(null, user);
+    } catch (error) {
+        done(error);
+    }
 });
+
+// passport.deserializeUser(function (id, done) {
+//     User.findById(id, function (err, user) {
+//         done(err, user);
+//     });
+// });
 
 
 // passport.serializeUser(User.serializeUser());
@@ -89,10 +102,10 @@ app.get("/", function (req, res) {
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile"] }));
 
 app.get("/auth/google/secrets",
-    passport.authenticate('google', { failureRedirect: '/login' }),
+    passport.authenticate("google", { failureRedirect: "/login" }),
     function (req, res) {
         // Successful authentication, redirect secrets.
-        res.redirect('/secrets');
+        res.redirect("/secrets");
     });
 
 
@@ -104,13 +117,88 @@ app.get("/register", function (req, res) {
     res.render("register");
 })
 
-app.get("/secrets", function (req, res) {
+//using async and await method
+app.get("/secrets", async function (req, res) {
+    try {
+        const foundUsers = await User.find({ "secret": { $ne: null } });
+        if (foundUsers) {
+            res.render("secrets", { usersWithSecrets: foundUsers });
+        }
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+//using then and catch method
+// app.get("/secrets", function (req, res) {
+//     User.find({ "secret": { $ne: null } })
+//         .then(function (foundUsers) {
+//             if (foundUsers) {
+//                 res.render("secrets", { usersWithSecrets: foundUsers });
+//             }
+//         })
+//         .catch(function (err) {
+//             console.log(err);
+//         });
+// });
+
+
+//deprecated method: User.find no longer accepts a callback, it can be done with async/await and then/catch method.
+// app.get("/secrets", function (req, res) {
+//     User.find({ "secret": { $ne: null } }, function (err, foundUsers) {
+//         if (err) {
+//             console.log(err);
+//         } else {
+//             if (foundUser) {
+//                 res.render("secrets", { usersWithSecrets: foundUsers });
+//             }
+//         }
+//     });
+// })
+
+app.get("/submit", function (req, res) {
     if (req.isAuthenticated()) {
-        res.render("secrets");
+        res.render("submit");
     } else {
         res.redirect("/login");
     }
 })
+
+app.post("/submit", function (req, res) {
+    const submittedSecret = req.body.secret;
+
+    User.findById(req.user.id)
+        .then(function (foundUser) {
+            if (foundUser) {
+                foundUser.secret = submittedSecret;
+                return foundUser.save();
+            }
+        })
+        .then(function () {
+            res.redirect("/secrets");
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
+});
+
+
+// app.post("/submit", function (req, res) {
+//     const submittedSecret = req.body.secret;
+
+//     User.findById(req.user.id, function (err, foundUser) {
+//         if (err) {
+//             console.log(err);
+//         } else {
+//             if (foundUser) {
+//                 foundUser.secret = submittedSecret;
+//                 foundUser.save(function () {
+//                     res.redirect("/secrets");
+//                 });
+//             }
+//         }
+//     });
+// });
 
 app.get("/logout", function (req, res) {
     req.logout(function (err) {
@@ -121,7 +209,6 @@ app.get("/logout", function (req, res) {
         }
     });
 })
-
 
 
 
@@ -153,7 +240,7 @@ app.post('/login', function (req, res) {
         } else {
             passport.authenticate("local")(req, res, function () {
                 res.redirect("/secrets");
-            })
+            });
         }
     });
 
