@@ -20,44 +20,44 @@ Update the MongoDB connection URL in the mongoose.connect statement in app.js if
 
 <mongoose.connect("mongodb://localhost:27017/userDB", { useNewUrlParser: true });>
   
-Usage
+#Usage
 Start the server by running the following command: <node app.js>
   
 Access the application in your web browser at http://localhost:3000.
 
-Features:
-1. User Registration
+#Features:
+1. User Registration:
 Access the registration page by visiting /register.
 Enter a username and password to create a new user account.
 User passwords are securely hashed and salted using passport-local-mongoose.
   
-2. User Login
+2. User Login:
 Access the login page by visiting /login.
 Enter the registered username and password to log in.
 If the login is successful, the user is redirected to the secrets page.
 Failed login attempts are handled gracefully.
   
-3. Google Authentication
+3. Google Authentication:
 Access the Google authentication page by visiting /auth/google.
 Authenticate using your Google account credentials.
 Upon successful authentication, the user is redirected to the secrets page.
 The Passport.js library with the passport-google-oauth20 strategy is used for Google authentication.
 User accounts are created or found based on the Google ID, using findOrCreate plugin for Mongoose.
   
-4. Secrets Page
+4. Secrets Page:
 Access the secrets page by visiting /secrets.
 Only authenticated users can view the secrets page.
 The secrets of all users who have submitted secrets are displayed.
 Secrets are retrieved using asynchronous methods with async/await.
 Alternatively, you can use the then/catch method by commenting and uncommenting the relevant code sections.
   
-5. Submitting Secrets
+5. Submitting Secrets:
 Access the submit page by visiting /submit.
 Only authenticated users can access the submit page.
 Enter a secret in the provided input field and submit it.
 The submitted secret is associated with the user's account and saved to the database.
   
-6. Logging Out
+6. Logging Out:
 Access the logout functionality by visiting /logout.
 Logs out the currently authenticated user and redirects to the home page.
   
