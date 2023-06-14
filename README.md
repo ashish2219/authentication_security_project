@@ -20,12 +20,12 @@ Update the MongoDB connection URL in the mongoose.connect statement in app.js if
 
 <mongoose.connect("mongodb://localhost:27017/userDB", { useNewUrlParser: true });>
   
-#Usage
+# Usage
 Start the server by running the following command: <node app.js>
   
 Access the application in your web browser at http://localhost:3000.
 
-#Features:
+# Features:
 1. User Registration:
 Access the registration page by visiting /register.
 Enter a username and password to create a new user account.
