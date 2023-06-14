@@ -5,7 +5,8 @@ This project is a web application that implements authentication and security fe
 Installation
 Clone the repository or download the project files.
 
-Install the required dependencies by running the following command: <npm install> 
+Install the required dependencies by running the following command: 
+<npm install> 
 
 Create a .env file in the project root directory and provide the necessary environment variables:
 
