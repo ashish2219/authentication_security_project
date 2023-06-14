@@ -1,4 +1,4 @@
-# authentication_security_project  <code>
+# authentication_security_project  
 
 This project is a web application that implements authentication and security features. It utilizes salting and hashing for password storage and incorporates Google authentication using the Passport.js library. Users can register, login, and submit secrets. Only authenticated users can access the secrets page.
 
@@ -6,7 +6,7 @@ Installation
 Clone the repository or download the project files.
 
 Install the required dependencies by running the following command: 
-<npm install> 
+ npm install
 
 Create a .env file in the project root directory and provide the necessary environment variables:
 
